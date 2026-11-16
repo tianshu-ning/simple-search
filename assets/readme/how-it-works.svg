@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="t d">
+  <title id="t">simple-search 为什么快</title>
+  <desc id="d">按下可自定义的全局快捷键（默认 Option + 空格）打开原生搜索窗口。后台搜索服务接收查询，文件名索引常驻内存。搜索来源包括文件名、文件内容与截图文字、AI 对话、浏览器书签和自定义网址。上游基准测试中，15.5 万项索引的大部分查询耗时 2 到 6 毫秒。</desc>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#27347F"/><stop offset="0.6" stop-color="#5B4FC4"/><stop offset="1" stop-color="#E5857A"/></linearGradient>
+    <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#5B4FC4"/></marker>
+  </defs>
+  <rect width="1200" height="520" rx="28" fill="#F7F6FB"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Noto Sans CJK SC', sans-serif">
+    <text x="60" y="76" font-size="40" font-weight="700" fill="#1C1F2A">为什么快：窗口和索引一直在</text>
+    <text x="60" y="114" font-size="21" fill="#5C6070">输入变化时直接查询后台服务，文件名索引已提前加载</text>
+
+    <!-- hotkey -->
+    <g transform="translate(60 196)">
+      <rect width="190" height="120" rx="18" fill="#FFFFFF" stroke="#DCDCE8" stroke-width="2"/>
+      <text x="95" y="32" font-size="21" font-weight="700" fill="#1C1F2A" text-anchor="middle">全局快捷键</text>
+      <rect x="35" y="45" width="120" height="35" rx="9" fill="#F0EFF7" stroke="#C9C7DD" stroke-width="2"/>
+      <text x="95" y="69" font-size="18" font-weight="600" fill="#1C1F2A" text-anchor="middle">⌥ 空格</text>
+      <text x="95" y="103" font-size="17" fill="#3A3F4F" text-anchor="middle">默认，可在菜单栏修改</text>
+    </g>
+    <path d="M254 256 H316" stroke="#5B4FC4" stroke-width="3" marker-end="url(#a)"/>
+
+    <!-- native window -->
+    <g transform="translate(322 176)">
+      <rect width="250" height="160" rx="18" fill="#FFFFFF" stroke="#DCDCE8" stroke-width="2"/>
+      <text x="125" y="44" font-size="22" font-weight="700" fill="#1C1F2A" text-anchor="middle">原生搜索窗口</text>
+      <text x="125" y="76" font-size="18" fill="#5C6070" text-anchor="middle">AppKit · 常驻菜单栏</text>
+      <text x="125" y="104" font-size="18" fill="#5C6070" text-anchor="middle">登录后自动启动</text>
+      <text x="125" y="134" font-size="18" fill="#5C6070" text-anchor="middle">边输入边出结果</text>
+    </g>
+    <path d="M576 236 H640" stroke="#5B4FC4" stroke-width="3" marker-end="url(#a)"/>
+    <path d="M644 276 H580" stroke="#5B4FC4" stroke-width="3" marker-end="url(#a)"/>
+    <text x="610" y="222" font-size="18" fill="#5C6070" text-anchor="middle">查询</text>
+    <text x="610" y="304" font-size="18" fill="#5C6070" text-anchor="middle">结果</text>
+
+    <!-- resident process -->
+    <g transform="translate(648 150)">
+      <rect width="250" height="212" rx="18" fill="url(#g)"/>
+      <text x="125" y="46" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">后台搜索服务</text>
+      <text x="125" y="76" font-size="18" fill="#FFFFFF" fill-opacity="0.9" text-anchor="middle">文件名索引常驻内存</text>
+      <text x="125" y="122" font-size="30" font-weight="700" fill="#FFFFFF" text-anchor="middle">2–6 ms</text>
+      <text x="125" y="150" font-size="18" fill="#FFFFFF" fill-opacity="0.9" text-anchor="middle">大部分查询耗时</text>
+      <text x="125" y="186" font-size="18" fill="#FFFFFF" fill-opacity="0.9" text-anchor="middle">15.5 万项 · 加载 0.11 s</text>
+    </g>
+
+    <!-- sources -->
+    <g transform="translate(940 148)" font-size="19" fill="#1C1F2A">
+      <g><rect width="210" height="40" rx="12" fill="#FFFFFF" stroke="#DCDCE8" stroke-width="2"/><text x="18" y="27">文件名索引</text></g>
+      <g transform="translate(0 44)"><rect width="210" height="40" rx="12" fill="#FFFFFF" stroke="#DCDCE8" stroke-width="2"/><text x="18" y="27">内容 · 截图文字</text></g>
+      <g transform="translate(0 88)"><rect width="210" height="40" rx="12" fill="#FFFFFF" stroke="#DCDCE8" stroke-width="2"/><text x="18" y="27">AI 对话</text></g>
+      <g transform="translate(0 132)"><rect width="210" height="40" rx="12" fill="#FFFFFF" stroke="#DCDCE8" stroke-width="2"/><text x="18" y="27">浏览器书签</text></g>
+      <g transform="translate(0 176)"><rect width="210" height="40" rx="12" fill="#FFFFFF" stroke="#DCDCE8" stroke-width="2"/><text x="18" y="27">自定义网址</text></g>
+    </g>
+    <g stroke="#B9B4E0" stroke-width="2.5" fill="none">
+      <path d="M938 168 C918 168 918 256 902 256"/><path d="M938 212 C918 212 918 256 902 256"/>
+      <path d="M938 256 H902"/>
+      <path d="M938 300 C918 300 918 256 902 256"/><path d="M938 344 C918 344 918 256 902 256"/>
+    </g>
+
+    <!-- mechanisms -->
+    <g transform="translate(60 412)" font-size="19" fill="#3A3F4F">
+      <rect width="1080" height="72" rx="16" fill="#FFFFFF" stroke="#E4E3EE" stroke-width="2"/>
+      <text x="28" y="44">文件名连续存放，整段扫描匹配</text>
+      <text x="360" y="44">任一文件夹的子树是一段连续区间</text>
+      <text x="720" y="44">只重扫有变化的文件夹，不用全盘重建</text>
+      <rect x="338" y="18" width="2" height="36" fill="#E4E3EE"/><rect x="698" y="18" width="2" height="36" fill="#E4E3EE"/>
+    </g>
+  </g>
+</svg>
