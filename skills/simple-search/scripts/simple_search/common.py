@@ -4,7 +4,7 @@ import os
 import sys
 import time
 
-VERSION = "1.2.0"
+VERSION = "1.2.1"
 HOME = os.path.expanduser("~")
 IS_MAC = sys.platform == "darwin"
 SKILL_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
