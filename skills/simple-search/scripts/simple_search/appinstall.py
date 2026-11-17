@@ -37,6 +37,26 @@ def _swiftc():
     return None
 
 
+def _swift_sdk_args():
+    sdk = os.environ.get("SDKROOT")
+    if not sdk:
+        try:
+            sdk = subprocess.check_output(
+                ["xcrun", "--sdk", "macosx", "--show-sdk-path"],
+                text=True, stderr=subprocess.DEVNULL, timeout=10,
+            ).strip()
+        except (OSError, subprocess.SubprocessError):
+            return []
+    if not os.path.isdir(sdk):
+        return []
+    args = ["-sdk", sdk]
+    # 按实际参与编译的 SDK 判断，旧 SDK 无需解析新 API。
+    glass_header = os.path.join(sdk, "System/Library/Frameworks/AppKit.framework/Headers/NSGlassEffectView.h")
+    if os.path.isfile(glass_header):
+        args.extend(["-D", "SIMPLE_SEARCH_LIQUID_GLASS"])
+    return args
+
+
 def install(open_after=True):
     if not IS_MAC:
         raise RuntimeError("原生窗口只支持 macOS。")
@@ -51,7 +71,9 @@ def install(open_after=True):
     eprint("正在编译 simple-search 窗口（约 30~60 秒，仅此一次）…")
     t0 = time.time()
     binary = os.path.join(tmp, "Contents", "MacOS", "SimpleSearch")
-    r = subprocess.run([swiftc, "-O", "-o", binary, src], capture_output=True, text=True, timeout=1200)
+    target = os.uname().machine + "-apple-macos11"
+    args = [swiftc, "-O", "-target", target, *_swift_sdk_args(), "-o", binary, src]
+    r = subprocess.run(args, capture_output=True, text=True, timeout=1200)
     log = os.path.join(data_dir(), "app-build.log")
     with open(log, "w", encoding="utf-8") as f:
         f.write(r.stdout + "\n" + r.stderr)

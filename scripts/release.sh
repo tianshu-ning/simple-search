@@ -16,12 +16,21 @@ rm -rf "$DIST"; mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 echo "编译搜索窗口（Apple 芯片 + Intel，约 2~4 分钟）…"
 SRC="$SKILL/scripts/helper/SimpleSearchApp.swift"
 BIN="$APP/Contents/MacOS/SimpleSearchBin"
-if swiftc -O -target arm64-apple-macos11 -o "$DIST/arm64" "$SRC" && \
-   swiftc -O -target x86_64-apple-macos11 -o "$DIST/x86_64" "$SRC"; then
+SDK_PATH="${SDKROOT:-$(xcrun --sdk macosx --show-sdk-path 2>/dev/null || true)}"
+SDK_ARGS=()
+if [ -d "$SDK_PATH" ]; then
+  SDK_ARGS+=(-sdk "$SDK_PATH")
+  # 按实际参与编译的 SDK 判断，旧 SDK 无需解析新 API。
+  if [ -f "$SDK_PATH/System/Library/Frameworks/AppKit.framework/Headers/NSGlassEffectView.h" ]; then
+    SDK_ARGS+=(-D SIMPLE_SEARCH_LIQUID_GLASS)
+  fi
+fi
+if swiftc -O -target arm64-apple-macos11 "${SDK_ARGS[@]}" -o "$DIST/arm64" "$SRC" && \
+   swiftc -O -target x86_64-apple-macos11 "${SDK_ARGS[@]}" -o "$DIST/x86_64" "$SRC"; then
   lipo -create "$DIST/arm64" "$DIST/x86_64" -output "$BIN"
 else
   echo "通用二进制失败，只编译本机架构。"
-  swiftc -O -target "$(uname -m)-apple-macos11" -o "$BIN" "$SRC"
+  swiftc -O -target "$(uname -m)-apple-macos11" "${SDK_ARGS[@]}" -o "$BIN" "$SRC"
 fi
 rm -f "$DIST/arm64" "$DIST/x86_64"
 

@@ -333,7 +333,31 @@ final class SearchController: NSObject, NSTextFieldDelegate, NSTableViewDataSour
         }
     }
 
-    // MARK: layout
+    // MARK: 窗口布局
+    private func makeWindowContent() -> NSView {
+#if SIMPLE_SEARCH_LIQUID_GLASS
+        if #available(macOS 26.0, *) {
+            let glass = NSGlassEffectView()
+            glass.cornerRadius = 16
+            glass.style = .regular
+            let content = NSView()
+            // 通过系统提供的内容层，让 AppKit 一起处理玻璃上的文字和控件。
+            glass.contentView = content
+            panel.contentView = glass
+            return content
+        }
+#endif
+        let root = NSVisualEffectView()
+        root.material = .popover
+        root.blendingMode = .behindWindow
+        root.state = .active
+        root.wantsLayer = true
+        root.layer?.cornerRadius = 16
+        root.layer?.masksToBounds = true
+        panel.contentView = root
+        return root
+    }
+
     private func buildWindow() {
         panel.isFloatingPanel = true
         panel.level = .floating
@@ -345,15 +369,7 @@ final class SearchController: NSObject, NSTextFieldDelegate, NSTableViewDataSour
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         panel.delegate = self
 
-        let root = NSVisualEffectView()
-        root.material = .popover
-        root.blendingMode = .behindWindow
-        root.state = .active
-        root.wantsLayer = true
-        root.layer?.cornerRadius = 16
-        root.layer?.masksToBounds = true
-        panel.contentView = root
-
+        let root = makeWindowContent()
         // Header: magnifier + search field
         let glass = NSImageView()
         if let img = NSImage(systemSymbolName: "magnifyingglass", accessibilityDescription: "搜索") {

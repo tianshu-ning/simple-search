@@ -4,7 +4,7 @@ simple-search 是一个本机搜索工具：按一下热键弹出搜索框，输
 
 它同时是一个 AI Skill：装进 Claude 或 Codex 后，直接说「帮我找上周改过的 Excel」就行，不用记语法。
 
-[![simple-search 循环搜索演示，输入 bg 查找本机文件，在 AI 对话中搜索网关，在书签中搜索开发。点击查看 bg 的混合搜索结果原图。](./assets/readme/hero.svg)](./assets/readme/search-window.png)
+![simple-search 在彩色背景上的 macOS 26 Liquid Glass 窗口实拍，输入 bg 查找本机文件，在 AI 对话中搜索网关，在书签中搜索开发。](./assets/readme/hero.svg)
 
 ## 能搜什么
 
