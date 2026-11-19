@@ -167,14 +167,17 @@ class State:
 
     @staticmethod
     def file_item(h, q):
+        name = h.name
+        if h.kind == 2:
+            name = getattr(h.idx, "app_display_names", {}).get(h.row, name)
         sub = abbreviate(os.path.dirname(h.path))
         if h.snippet:
             sub = sub + "  ·  " + h.snippet.replace("【", "").replace("】", "")
         r2 = "文件夹" if h.is_dir else size_text(h.size)
         if h.offline:
             r2 = (h.source or "离线") + " · 离线"
-        return {"t": "file", "name": h.name, "path": h.path, "sub": sub, "r1": date_text(h.mtime), "r2": r2,
-                "hl": spans16(h.name, search.highlight_spans(h.name, q)), "dir": h.is_dir,
+        return {"t": "file", "name": name, "path": h.path, "sub": sub, "r1": date_text(h.mtime), "r2": r2,
+                "hl": spans16(name, search.highlight_spans(name, q)), "dir": h.is_dir,
                 "off": bool(h.offline), "fuzzy": bool(h.fuzzy)}
 
     def topic_items(self, text, limit):

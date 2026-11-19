@@ -12,10 +12,15 @@ import bisect
 import hashlib
 import json
 import os
+import plistlib
+import re
 import shutil
 import stat as _stat
+import subprocess
 import time
 from concurrent.futures import ThreadPoolExecutor
+from functools import cached_property
+from xml.parsers.expat import ExpatError
 
 from . import pinyin
 from .common import (BUILD_OUTPUTS, F_DIR, F_HIDDEN, F_INPKG, F_LINK, F_NOISE, F_PACKAGE, F_USER, HOME, IS_MAC,
@@ -97,6 +102,44 @@ class Rules:
 
 # ------------------------------------------------------------------ storage
 
+_SIMPLIFIED_APP_LOCALES = ("zh_CN", "zh-Hans")
+_APP_LOCALES = _SIMPLIFIED_APP_LOCALES + ("zh_TW", "zh_HK", "zh-Hant", "en")
+
+
+def _read_app_plist(path):
+    try:
+        with open(path, "rb") as f:
+            data = plistlib.load(f)
+    except (OSError, ValueError, plistlib.InvalidFileException, ExpatError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _localized_app_names(path):
+    resources = os.path.join(path, "Contents", "Resources")
+    translations = _read_app_plist(os.path.join(resources, "InfoPlist.loctable"))
+    for locale in _APP_LOCALES:
+        info = translations.get(locale)
+        if not isinstance(info, dict):
+            strings = os.path.join(resources, locale + ".lproj", "InfoPlist.strings")
+            info = _read_app_plist(strings)
+            if not info and os.path.isfile(strings):
+                # 旧版资源可能使用 plistlib 无法解析的文本格式。
+                try:
+                    data = subprocess.check_output(
+                        ["/usr/bin/plutil", "-convert", "xml1", "-o", "-", "--", strings],
+                        stderr=subprocess.DEVNULL, timeout=2,
+                    )
+                    info = plistlib.loads(data)
+                except (OSError, ValueError, plistlib.InvalidFileException, ExpatError, subprocess.SubprocessError):
+                    continue
+        if isinstance(info, dict):
+            for key in ("CFBundleDisplayName", "CFBundleName"):
+                name = info.get(key)
+                if isinstance(name, str) and name.strip():
+                    yield locale, name.strip()
+
+
 class Index:
     """Loaded index. Attribute names mirror the on-disk columns."""
 
@@ -127,6 +170,32 @@ class Index:
     @property
     def count(self):
         return len(self.names)
+
+    @cached_property
+    def _app_names(self):
+        # 同一次读取生成搜索别名和显示名称，真实路径仍由索引中的文件名还原。
+        aliases, display_names = {}, {}
+        if IS_MAC:
+            for match in re.finditer(b"\x02", self.kind.tobytes()):
+                row = match.start()
+                stem = os.path.splitext(self.names[row])[0].lower()
+                names = {}
+                for locale, name in _localized_app_names(self.path(row)):
+                    if locale in _SIMPLIFIED_APP_LOCALES and pinyin.has_han(name):
+                        display_names.setdefault(row, name)
+                    if name.lower() != stem:
+                        names[name] = None
+                if names:
+                    aliases[row] = tuple(names)
+        return aliases, display_names
+
+    @property
+    def app_aliases(self):
+        return self._app_names[0]
+
+    @property
+    def app_display_names(self):
+        return self._app_names[1]
 
     def _build_hay(self):
         text = "\n".join(self.names)

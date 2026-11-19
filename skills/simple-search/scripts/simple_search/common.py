@@ -52,7 +52,7 @@ BUILD_OUTPUTS = {"target": ("pom.xml", "Cargo.toml", "build.gradle", "build.grad
 TOP_SYSTEM = _words("System private usr bin sbin opt Library cores dev proc sys run snap boot lost+found")
 
 DEFAULT_CONFIG = {
-    "roots": [],                 # empty -> home folder (+ /Applications on macOS)
+    "roots": [],                 # 留空时扫描用户目录及 macOS 应用目录
     "exclude_paths": [],
     "exclude_names": [],
     "exclude_ext": [],
@@ -123,8 +123,8 @@ def default_roots(cfg):
     roots = [expand(r) for r in cfg.get("roots") or []]
     if not roots:
         roots = [HOME]
-        if IS_MAC and os.path.isdir("/Applications"):
-            roots.append("/Applications")
+        if IS_MAC:
+            roots.extend(("/Applications", "/System/Applications"))
     return [r for r in roots if os.path.isdir(r)]
 
 

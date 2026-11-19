@@ -245,7 +245,22 @@ def quality_map(idx, needle):
             elif pos == ls and out[row][0] < 3:
                 out[row] = (4 if le - ls == nl else 3, 0)
             pos = text.find(needle, le + 1)
+    for row, names in idx.app_aliases.items():
+        match_quality, slack = _alias_quality(names, needle)
+        old_quality, old_slack = out.get(row, (0, 0))
+        if (match_quality, -slack) > (old_quality, -old_slack):
+            out[row] = match_quality, slack
     return out
+
+
+def _alias_quality(names, needle):
+    best = (0, 0)
+    for name in names:
+        lower = name.lower()
+        match = (quality(lower, name, needle), len(lower) - len(needle))
+        if match[0] and (match[0], -match[1]) > (best[0], -best[1]):
+            best = match
+    return best
 
 
 def _find_py_rows(idx, needle):
@@ -601,7 +616,7 @@ def _names_only(q):
 
 def _contains(ctx, row, needle):
     """Name (or one of its pinyin keys) contains needle."""
-    if needle in ctx.idx.lower(row):
+    if needle in ctx.idx.lower(row) or any(needle in name.lower() for name in ctx.idx.app_aliases.get(row, ())):
         return True
     py = ctx.pinyin_rows(needle)
     return bool(py) and row in py
@@ -610,9 +625,12 @@ def _contains(ctx, row, needle):
 def _row_quality(ctx, row, needle):
     idx = ctx.idx
     low = idx.lower(row)
-    q = quality(low, idx.names[row], needle)
+    q, slack = quality(low, idx.names[row], needle), len(low) - len(needle)
+    alias_q, alias_slack = _alias_quality(idx.app_aliases.get(row, ()), needle)
+    if (alias_q, -alias_slack) > (q, -slack):
+        return alias_q, alias_slack
     if q:
-        return q, len(low) - len(needle)
+        return q, slack
     if pinyin.has_han(low) and _is_ascii_word(needle):
         best = 0
         for f, i in pinyin.keys(low):
